@@ -1,9 +1,6 @@
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StoredField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
@@ -86,13 +83,14 @@ public class MyIndex {
             Document doc = new Document();
 
             // create the fields of the document and add them to the document
-            StoredField title = new StoredField("title", mydoc.getTitle());
+            StringField code = new StringField("code", mydoc.getCode(), Field.Store.YES);
+            doc.add(code);
+            TextField title = new TextField("title", mydoc.getTitle(), Field.Store.YES);
             doc.add(title);
             StoredField body = new StoredField("body", mydoc.getBody());
             doc.add(body);
-            StoredField code = new StoredField("code", mydoc.getCode());
-            doc.add(code);
-            String fullSearchableText = mydoc.getTitle() + " " + mydoc.getBody() + " " + mydoc.getCode();
+
+            String fullSearchableText = mydoc.getCode() + " " + mydoc.getTitle() + " " + mydoc.getBody();
             TextField contents = new TextField("contents", fullSearchableText, Field.Store.NO);
             doc.add(contents);
 

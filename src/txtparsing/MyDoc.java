@@ -16,9 +16,9 @@ public class MyDoc {
     @Override
     public String toString() {
         String ret = "MyDoc{"
+                + "\n\tCode: " + code
                 + "\n\tTitle: " + title
-                + "\n\tBody: " + body
-                + "\n\tCode: " + code;
+                + "\n\tBody: " + body;
         return ret + "\n}";
     }
 
