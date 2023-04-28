@@ -6,7 +6,6 @@ public class MyDoc {
     private String title;
     private String body;
 
-
     public MyDoc(String code, String title, String body) {
         this.code = code;
         this.title = title;

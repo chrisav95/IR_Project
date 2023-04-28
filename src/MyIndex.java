@@ -4,7 +4,7 @@ import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
-import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -18,25 +18,28 @@ import java.util.List;
 
 public class MyIndex {
 
+    private String txtfile;
+
     /**
      * Configures IndexWriter.
      * Creates a lucene's inverted index.
      *
      */
-    public MyIndex() throws Exception{
+    public MyIndex(String txtfile) throws Exception{
 
-        String txtfile =  "IR2023//docs.txt"; //txt file to be parsed and indexed
+        this.txtfile = txtfile;
         String indexLocation = ("index"); //define were to store the index
 
         Date start = new Date();
         try {
             System.out.println("Indexing to directory '" + indexLocation + "'...");
-
+            //define in which directory to store the index
             Directory dir = FSDirectory.open(Paths.get(indexLocation));
             // define which analyzer to use for the normalization of documents
             Analyzer analyzer = new EnglishAnalyzer();
             // define retrieval model
-            Similarity similarity = new BM25Similarity();
+            // ClassicsSimilarity is an implementation of TFIDFSimilarity which uses the Vector Space Model
+            Similarity similarity = new ClassicSimilarity();
             // configure IndexWriter
             IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
             iwc.setSimilarity(similarity);
@@ -49,15 +52,18 @@ public class MyIndex {
             IndexWriter indexWriter = new IndexWriter(dir, iwc);
 
             // parse txt document using TXT parser and index it
-            List<MyDoc> docs = TXTParsing.parse(txtfile);
+            List<MyDoc> docs = TXTParsing.parseDocs(txtfile);
             for (MyDoc doc : docs){
                 indexDoc(indexWriter, doc);
             }
+
+            System.out.println("Indexed the docs successfully!");
 
             indexWriter.close();
 
             Date end = new Date();
             System.out.println(end.getTime() - start.getTime() + " total milliseconds");
+            System.out.println("----------------------------");
 
         } catch (IOException e) {
             System.out.println(" caught a " + e.getClass() +
@@ -87,16 +93,15 @@ public class MyIndex {
             doc.add(code);
             TextField title = new TextField("title", mydoc.getTitle(), Field.Store.YES);
             doc.add(title);
-            StoredField body = new StoredField("body", mydoc.getBody());
+            TextField body = new TextField("body", mydoc.getBody(), Field.Store.NO);
             doc.add(body);
-
-            String fullSearchableText = mydoc.getCode() + " " + mydoc.getTitle() + " " + mydoc.getBody();
-            TextField contents = new TextField("contents", fullSearchableText, Field.Store.NO);
+            //adding a field that will be searched
+            String searchableText =  mydoc.getTitle() + " " + mydoc.getBody();
+            TextField contents = new TextField("contents", searchableText, Field.Store.NO);
             doc.add(contents);
 
             if (indexWriter.getConfig().getOpenMode() == OpenMode.CREATE) {
                 // New index, so we just add the document (no old document can be there):
-                System.out.println("adding " + mydoc);
                 indexWriter.addDocument(doc);
             }
         } catch(Exception e){
