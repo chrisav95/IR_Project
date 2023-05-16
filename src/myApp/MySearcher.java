@@ -1,3 +1,5 @@
+package myApp;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
@@ -8,7 +10,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.store.FSDirectory;
 import txtparsing.MyDoc;
@@ -39,14 +40,14 @@ public class MySearcher {
             // parse queries txt using TXT parser
             List<MyQuery> queries = TXTParsing.parseQueries(queriestxt);
 
-
             //create a txt for the results
             String filename = "IR2023\\results_"+k+".txt";
             File res = new File(filename);
 
-            if(!res.exists()){
-                res.createNewFile();
+            if(res.exists()){
+                res.delete();
             }
+            res.createNewFile();
 
             //search the index for every query
             for (MyQuery q : queries){
@@ -81,7 +82,7 @@ public class MySearcher {
 
             // parse the query according to QueryParser
             Query query = parser.parse(q.getQuery());
-            System.out.println("Searching for: " + query.toString(field));
+            System.out.println("Searching for: " + q.toString());
 
             // search the index using the indexSearcher
             TopDocs results = indexSearcher.search(query, k);
@@ -93,7 +94,7 @@ public class MySearcher {
             //display results & write in file
             for(int i=0; i<hits.length; i++){
                 Document hitDoc = indexSearcher.doc(hits[i].doc);
-                System.out.println("\tScore "+hits[i].score+"\ttitle="+hitDoc.get("title")+"\tbody:"+hitDoc.get("body")+"\tcode:"+hitDoc.get("code"));
+                System.out.println("\tScore: "+hits[i].score+" \tCode:"+hitDoc.get("code")+" \tTitle="+hitDoc.get("title"));
 
                 //write doc in the form: query id, iteration, document number, rank, sim, run_id
                 writer.append(q.getCode()+" Q0 "+hitDoc.get("code")+" 0 "+hits[i].score+" search");

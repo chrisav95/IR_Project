@@ -1,3 +1,5 @@
+package myApp;
+
 public class IRmain {
     public static void main(String[] args){
         try {

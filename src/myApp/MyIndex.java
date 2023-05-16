@@ -1,3 +1,5 @@
+package myApp;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.*;
@@ -23,7 +25,6 @@ public class MyIndex {
     /**
      * Configures IndexWriter.
      * Creates a lucene's inverted index.
-     *
      */
     public MyIndex(String txtfile) throws Exception{
 
@@ -93,7 +94,7 @@ public class MyIndex {
             doc.add(code);
             TextField title = new TextField("title", mydoc.getTitle(), Field.Store.YES);
             doc.add(title);
-            TextField body = new TextField("body", mydoc.getBody(), Field.Store.NO);
+            TextField body = new TextField("body", mydoc.getBody(), Field.Store.YES);
             doc.add(body);
             //adding a field that will be searched
             String searchableText =  mydoc.getTitle() + " " + mydoc.getBody();
@@ -102,6 +103,7 @@ public class MyIndex {
 
             if (indexWriter.getConfig().getOpenMode() == OpenMode.CREATE) {
                 // New index, so we just add the document (no old document can be there):
+                System.out.println("adding " + mydoc);
                 indexWriter.addDocument(doc);
             }
         } catch(Exception e){

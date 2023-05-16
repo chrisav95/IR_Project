@@ -1,15 +1,20 @@
 package txtparsing;
 
-import utils.IO;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class TXTParsing {
 
     public static List<MyDoc> parseDocs(String file) throws Exception {
         try{
-            //Parse txt file
-            String txt_file = IO.ReadEntireFileIntoAString(file);
+
+            //Parse txt file of documents
+            Scanner scanner = new Scanner(new File(file));
+            scanner.useDelimiter("\\A"); //\\A stands for :start of a string
+            String txt_file = scanner.next(); //Reading entire file into a String
+
             String[] docs = txt_file.split("///");
             System.out.println("Read: "+docs.length + " docs");
 
@@ -19,7 +24,7 @@ public class TXTParsing {
                 String trimmed = doc.trim();
                 //The first string is the code of the Doc
                 String[] fields1 = trimmed.split("\n",2);
-                String code = fields1[0];
+                String code = fields1[0].trim();
 
                 //The string after that and before the ":" is the Title of the Doc
                 String[] fields2 = fields1[1].split(":",2);
@@ -42,8 +47,10 @@ public class TXTParsing {
 
     public static List<MyQuery> parseQueries(String file) throws Exception {
         try{
-            //Parse txt file
-            String txt_file = IO.ReadEntireFileIntoAString(file);
+            //Parse txt file of queries
+            Scanner scanner = new Scanner(new File(file));
+            scanner.useDelimiter("\\A"); //\\A stands for :start of a string
+            String txt_file = scanner.next();
             String[] queries = txt_file.split("///");
             System.out.println("Read: "+queries.length + " queries");
             System.out.println("----------------------------");
@@ -54,10 +61,10 @@ public class TXTParsing {
                 String trimmed = q.trim();
                 //The first string is the code of the Query
                 String[] fields = trimmed.split("\n");
-                String code = fields[0];
+                String code = fields[0].trim();
 
                 //The string after that is the Query
-                String query = fields[1];
+                String query = fields[1].trim();
 
                 MyQuery myquery = new MyQuery(code,query);
                 parsed_queries.add(myquery);

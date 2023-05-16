@@ -12,10 +12,8 @@ public class MyQuery {
 
     @Override
     public String toString() {
-        String ret = "MyQuery{"
-                + "\n\tCode: " + code
-                + "\n\tQuery: " + query;
-        return ret + "\n}";
+        String ret = "MyQuery{Code: " + code + "\tQuery: " + query;
+        return ret + "}";
     }
 
     //---- Getters & Setters definition ----

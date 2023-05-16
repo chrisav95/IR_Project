@@ -1,0 +1,8 @@
+ cd /opt
+cd "C:/Users/chris/Desktop/IntelliJ Workspace/IR_Project/IR2023"
+ ./trec_eval qrels.txt results_20.txt
+./trec_eval -m map -m P.5,10,15,20 qrels.txt results_20.txt
+
+If you wish to output only one particular measure:
+./trec_eval -m measure[.params] rel_info_file results_file
+./trec_eval [-q] [-m measure] qrel_file results_file
