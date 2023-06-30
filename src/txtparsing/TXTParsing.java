@@ -1,9 +1,14 @@
 package txtparsing;
 
-import java.io.File;
+import org.apache.lucene.analysis.synonym.SynonymMap;
+import org.apache.lucene.analysis.synonym.WordnetSynonymParser;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import static java.lang.System.err;
 
 public class TXTParsing {
 
@@ -77,4 +82,66 @@ public class TXTParsing {
         }
 
     }
+
+    public static void parseWordNetFile(String file) throws Exception {
+        try{
+            Reader reader = new FileReader(file);
+
+            if (! (new File(file)).canRead()) {
+                err.println("Error: cannot read Prolog file: " + file);
+                System.exit(1);
+            }
+
+            //Parse txt file of WordNet synonyms
+            Scanner scanner = new Scanner(new File(file));
+            scanner.useDelimiter("\\A"); //\\A stands for :start of a string
+            String txt_file = scanner.next();
+            String[] synonyms = txt_file.split("\n");
+            System.out.println("Read: "+synonyms.length + " synonyms.");
+            System.out.println("----------------------------");
+
+            //create a new txt that only contains synonyms of nouns
+            String filename = "C:\\Users\\chris\\Desktop\\IntelliJ Workspace\\IR_Project\\src\\synonyms_wn.txt";
+            File syn = new File(filename);
+
+            if(syn.exists()){
+                syn.delete();
+            }
+            syn.createNewFile();
+
+            // true to append in existing file
+            FileWriter fw = new FileWriter(syn,true);
+            BufferedWriter writer = new BufferedWriter(fw);
+
+            int count = 0;
+            //Parse each line from the txt file
+            for (String s:synonyms){
+                String trimmed = s.trim();
+                // storing the type of the word
+                String[] fields = trimmed.split(",");
+                String type = fields[3].trim();
+                // re-writing only the noun-synonyms
+                if (type.equals("n")){
+                    //write s in new txt
+                    writer.append(trimmed);
+                    writer.newLine();
+                    count++;
+                }
+            }
+
+            System.out.println("Kept: "+count+" synonyms.");
+            System.out.println("----------------------------");
+
+            writer.close();
+            return;
+
+        } catch (Throwable err) {
+            err.printStackTrace();
+            return;
+        }
+
+    }
+
 }
+
+
